@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control - Gestión Inmobiliaria</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
+
+    <style>
+        :root { --primary: #2c3e50; --accent: #27ae60; --bg: #f4f7f6; }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h1 { color: var(--primary); border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+        .form-group { margin-bottom: 15px; display: flex; flex-direction: column; }
+        label { font-weight: bold; margin-bottom: 5px; color: #555; }
+        input, select { padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; }
+        button { background: var(--accent); color: white; border: none; padding: 15px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; margin-top: 10px; }
+        button:hover { background: #219150; }
+        .success-msg { color: var(--accent); font-weight: bold; display: none; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Registrar Nueva Propiedad</h1>
+    <p>Ingresa los datos para que aparezcan automáticamente en la web del cliente.</p>
+    
+    <div class="form-group">
+        <label>Nombre del Propietario</label>
+        <input type="text" id="propietario" placeholder="Ej. Juan Pérez">
+    </div>
+
+    <div class="form-group">
+        <label>Título del Anuncio</label>
+        <input type="text" id="titulo" placeholder="Ej. Cuarto con baño independiente">
+    </div>
+
+    <div class="form-group">
+        <label>Tipo de Inmueble</label>
+        <select id="tipo">
+            <option value="Cuarto">Cuarto</option>
+            <option value="Departamento">Departamento</option>
+            <option value="Casa">Casa</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Precio Mensual (S/.)</label>
+        <input type="number" id="precio" placeholder="Ej. 500">
+    </div>
+
+    <div class="form-group">
+        <label>URL de la Foto (puedes usar un link de Google Fotos o similar)</label>
+        <input type="text" id="foto" placeholder="https://link-de-la-imagen.jpg">
+    </div>
+
+    <button onclick="guardarPropiedad()">Publicar Propiedad</button>
+    <p id="msg" class="success-msg">¡Propiedad registrada con éxito!</p>
+</div>
+
+<script>
+    // Configuración de tu Firebase (REEMPLAZA ESTO CON TUS DATOS)
+    const firebaseConfig = {
+        apiKey: "TU_API_KEY",
+        authDomain: "TU_PROYECTO.firebaseapp.com",
+        projectId: "TU_PROYECTO_ID",
+        storageBucket: "TU_PROYECTO.appspot.com",
+        messagingSenderId: "TU_SENDER_ID",
+        appId: "TU_APP_ID"
+    };
+
+    // Inicializar Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Función para enviar datos
+    async function guardarPropiedad() {
+        const prop = {
+            propietario: document.getElementById('propietario').value,
+            titulo: document.getElementById('titulo').value,
+            tipo: document.getElementById('tipo').value,
+            precio: document.getElementById('precio').value,
+            foto: document.getElementById('foto').value,
+            estado: "Disponible", // Por defecto aparece como disponible
+            fecha: new Date()
+        };
+
+        try {
+            await db.collection("propiedades").add(prop);
+            document.getElementById('msg').style.display = "block";
+            // Limpiar formulario
+            document.querySelectorAll('input').forEach(i => i.value = "");
+            setTimeout(() => { document.getElementById('msg').style.display = "none"; }, 3000);
+        } catch (error) {
+            console.error("Error al guardar: ", error);
+            alert("Hubo un error al guardar los datos.");
+        }
+    }
+</script>
+
+</body>
+</html>
