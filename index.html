@@ -48,12 +48,35 @@
 <script>
     // USA LA MISMA CONFIGURACIÓN QUE EN ADMIN.HTML
     const firebaseConfig = {
-        apiKey: "TU_API_KEY",
-        authDomain: "TU_PROYECTO.firebaseapp.com",
-        projectId: "TU_PROYECTO_ID",
-        storageBucket: "TU_PROYECTO.appspot.com",
-        messagingSenderId: "TU_SENDER_ID",
-        appId: "TU_APP_ID"
+        {
+  "project_info": {
+    "project_number": "986406028992",
+    "project_id": "alquileres-4bd7b",
+    "storage_bucket": "alquileres-4bd7b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:986406028992:android:8943cfa347a73442d3cf25",
+        "android_client_info": {
+          "package_name": "Web.Alquileres"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbFt5p-gHTFM97pug1aMz_dQ4yhX9mALw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
     };
 
     firebase.initializeApp(firebaseConfig);
