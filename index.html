@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alquileres Disponibles - Pucallpa</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
+
+    <style>
+        :root { --primary: #2c3e50; --accent: #27ae60; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; }
+        header { background: var(--primary); color: white; padding: 20px; text-align: center; }
+        
+        .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        
+        .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); }
+        .card img { width: 100%; height: 200px; object-fit: cover; background: #eee; }
+        
+        .card-content { padding: 15px; }
+        .price { font-size: 1.4rem; color: var(--accent); font-weight: bold; margin: 10px 0; }
+        .type { background: #eee; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem; text-transform: uppercase; }
+        
+        .btn-wa { 
+            display: block; background: #25D366; color: white; text-align: center; 
+            padding: 12px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 10px;
+        }
+        .btn-wa:hover { background: #128c7e; }
+        
+        #loading { text-align: center; font-size: 1.2rem; color: #7f8c8d; margin-top: 50px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Encuentra tu próximo hogar</h1>
+    <p>Propiedades filtradas y seguras en Ucayali</p>
+</header>
+
+<div class="container">
+    <div id="loading">Cargando propiedades disponibles...</div>
+    <div class="grid" id="catalogo">
+        </div>
+</div>
+
+<script>
+    // USA LA MISMA CONFIGURACIÓN QUE EN ADMIN.HTML
+    const firebaseConfig = {
+        apiKey: "TU_API_KEY",
+        authDomain: "TU_PROYECTO.firebaseapp.com",
+        projectId: "TU_PROYECTO_ID",
+        storageBucket: "TU_PROYECTO.appspot.com",
+        messagingSenderId: "TU_SENDER_ID",
+        appId: "TU_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Tu número de WhatsApp (con código de país, ej: 51987654321)
+    const miWhatsApp = "51900000000"; 
+
+    function cargarPropiedades() {
+        // Solo traemos las que tienen estado "Disponible"
+        db.collection("propiedades").where("estado", "==", "Disponible")
+        .onSnapshot((querySnapshot) => {
+            const catalogo = document.getElementById('catalogo');
+            const loading = document.getElementById('loading');
+            catalogo.innerHTML = "";
+            loading.style.display = "none";
+
+            if (querySnapshot.empty) {
+                loading.innerText = "No hay propiedades disponibles por el momento.";
+                loading.style.display = "block";
+                return;
+            }
+
+            querySnapshot.forEach((doc) => {
+                const p = doc.data();
+                const mensajeWa = encodeURIComponent(`Hola, vi el anuncio de ${p.titulo} (S/. ${p.precio}) en tu web y quisiera más información.`);
+                
+                catalogo.innerHTML += `
+                    <div class="card">
+                        <img src="${p.foto || 'https://via.placeholder.com/300x200?text=Sin+Foto'}" alt="Foto">
+                        <div class="card-content">
+                            <span class="type">${p.tipo}</span>
+                            <h3>${p.titulo}</h3>
+                            <p class="price">S/. ${p.precio}</p>
+                            <a href="https://wa.me/${miWhatsApp}?text=${mensajeWa}" class="btn-wa">
+                                💬 Consultar por WhatsApp
+                            </a>
+                        </div>
+                    </div>
+                `;
+            });
+        });
+    }
+
+    cargarPropiedades();
+</script>
+
+</body>
+</html>
